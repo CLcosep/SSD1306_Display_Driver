@@ -1,0 +1,17 @@
+# Build output
+build/
+*.o
+*.obj
+*.elf
+*.bin
+*.hex
+*.map
+
+# Editor/IDE junk
+.vscode/
+.idea/
+*.swp
+
+# OS junk
+.DS_Store
+Thumbs.db
