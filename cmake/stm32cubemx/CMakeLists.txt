@@ -76,6 +76,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE ${MX_Application_Src})
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     ${CMAKE_SOURCE_DIR}/Core/Src/ssd1306.c
     ${CMAKE_SOURCE_DIR}/Core/Src/fonts.c
+    ${CMAKE_SOURCE_DIR}/Core/Src/gif_player.c
 )
 
 # Link directories setup

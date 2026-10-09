@@ -23,6 +23,8 @@
 /* USER CODE BEGIN Includes */
 #include "fonts.h"
 #include "ssd1306.h"
+#include "gif_player.h"
+#include "stm32f1xx_hal.h"
 #include <stdint.h>
 /* USER CODE END Includes */
 
@@ -104,7 +106,10 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    
+    for (int i = 0; i < ANIM_FRAMES; i++) {
+      bd_send_frame(anim[i]);
+      HAL_Delay(66);
+    }
   }
   /* USER CODE END 3 */
 }

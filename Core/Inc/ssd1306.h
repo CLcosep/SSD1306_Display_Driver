@@ -86,6 +86,7 @@ void bd_send_cmd(uint8_t cmd);
 void bd_send_data(uint8_t data);
 void bd_init();
 void bd_display_update();
+void bd_send_frame(const uint8_t *frame); 
 
 
 extern I2C_HandleTypeDef hi2c1;

@@ -1,10 +1,16 @@
 #include "ssd1306.h"
 #include "fonts.h"
+#include "gif_player.h"
+#include "stm32f1xx_hal_def.h"
+#include "stm32f1xx_hal_i2c.h"
+#include <stdint.h>
+#include <string.h>
 
 uint8_t BD_FRAMEBUFFER[BD_FB_SIZE] = {0};
 
 void bd_set_pixel(int x, int y, bool state) {
     // SSD1306 OLED offsets the pixel vertically rather than the standard horizonal
+    if (x < 0 || x >= BD_FB_WIDTH || y < 0 || y >= BD_FB_HEIGHT) return; //bound check
 
     int pos = x + (y >> 3) * BD_FB_WIDTH; 
     uint8_t bitmask = (1  << (y & 0x7));
@@ -161,17 +167,46 @@ void bd_init() {
 
 }
 
-void bd_display_update() {
 
-    int size = BD_FB_HEIGHT / 8;
-    for (int page = 0; page < size; page++) {
+void bd_send_frame(const uint8_t *frame) {
+    uint8_t buf[BD_FB_WIDTH + 1];
+    buf[0] = 0x40;
+    for (int page = 0; page < BD_FB_HEIGHT / 8; page++) {
         bd_send_cmd(BD_COM_SET_PAGE_START_ADDR | page);
         bd_send_cmd(BD_COM_SET_LOW_COL_ADDR);
         bd_send_cmd(BD_COM_SET_HIGH_COL_ADDR);
-        for (int i = 0; i < BD_FB_WIDTH; i++) {
-            int col = BD_FRAMEBUFFER[page * BD_FB_WIDTH + i];
-            bd_send_data(col);
-        }        
-        
+        memcpy(&buf[1], &frame[page * BD_FB_WIDTH], BD_FB_WIDTH);
+        HAL_I2C_Master_Transmit(&hi2c1, SSD1306_I2C_ADDR, buf, BD_FB_WIDTH + 1, HAL_MAX_DELAY);
     }
+}
+
+void bd_display_update() {
+
+    // int size = BD_FB_HEIGHT / 8;
+    // for (int page = 0; page < size; page++) {
+    //     bd_send_cmd(BD_COM_SET_PAGE_START_ADDR | page);
+    //     bd_send_cmd(BD_COM_SET_LOW_COL_ADDR);
+    //     bd_send_cmd(BD_COM_SET_HIGH_COL_ADDR);
+    //     for (int i = 0; i < BD_FB_WIDTH; i++) {
+    //         int col = BD_FRAMEBUFFER[page * BD_FB_WIDTH + i];
+    //         bd_send_data(col);
+    //     }        
+        
+    // }
+    
+    // uint8_t buf[BD_FB_WIDTH + 1];
+    // int size = BD_FB_HEIGHT / 8;
+    // buf[0] = 0x40; // control byte - the reset is data 
+
+    // for (int page = 0; page < size; page++) {
+    //     bd_send_cmd(BD_COM_SET_PAGE_START_ADDR | page);
+    //     bd_send_cmd(BD_COM_SET_LOW_COL_ADDR);
+    //     bd_send_cmd(BD_COM_SET_HIGH_COL_ADDR);
+
+    //     memcpy(&buf[1], &BD_FRAMEBUFFER[page * BD_FB_WIDTH], BD_FB_WIDTH);
+    //     HAL_I2C_Master_Transmit(&hi2c1, SSD1306_I2C_ADDR, buf, BD_FB_WIDTH + 1, HAL_MAX_DELAY);
+
+    // }
+    // commented out since it functions the same asn the bd_send_frame
+    bd_send_frame(BD_FRAMEBUFFER);
 }
