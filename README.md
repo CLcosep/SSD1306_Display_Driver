@@ -12,4 +12,4 @@ A from scratch SSD1306 OLED Display Driver written for the STM32F103C8T6 "Blue P
 
 __Status__
 - Currently text rendering is disabled 
-- Will attempt to implement a GIF rendering capability
+- Will attempt to implement a GIF rendering capability (done)
